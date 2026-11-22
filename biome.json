@@ -6,7 +6,8 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"includes": ["**", "!**/*.svg"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -15,7 +16,15 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"preset": "recommended"
+			"preset": "recommended",
+			"correctness": {
+				"noReactNativeRawText": {
+					"level": "error",
+					"options": {
+						"skip": ["ThemedText", "TabButton", "NativeTabs.Trigger.Label"]
+					}
+				}
+			}
 		}
 	},
 	"javascript": {

@@ -1,16 +1,17 @@
 {
-  "name": "fairshare-receipts",
-  "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
-  "scripts": {
-    "lint": "biome check .",
-    "format": "biome check --write .",
-    "typecheck": "bun --filter '*' typecheck"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "2.6.8"
-  }
+	"name": "fairshare-receipts",
+	"private": true,
+	"workspaces": [
+		"apps/*",
+		"packages/*"
+	],
+	"scripts": {
+		"lint": "biome check .",
+		"format": "biome check --write .",
+		"typecheck": "bun --filter '*' typecheck"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.6.8",
+		"typescript": "^7.0.2"
+	}
 }
