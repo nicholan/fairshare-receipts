@@ -22,7 +22,7 @@ Implemented in `packages/shared/src/debts.ts` (`buildBalances`, `simplifyDebts`,
 - Deterministic, cheap (`O(n log n)`), and easy to test against conservation invariants.
 - **Not** a minimal-transfer solution. Minimising the number of transfers is a combinatorial problem; the greedy result is a good, explainable approximation and must not be described as optimal.
 - Cross-trip aggregation can produce a transfer between two people who never shared a single trip. That is intended (it reduces total transfers) but the product must allow it.
-- **Currency is not part of the function signature.** Callers must not pass contributions from trips in different currencies. Until a currency policy exists (see ADR-0001), this is enforced only by convention.
+- **Currency is not part of the function signature.** Callers must not pass contributions from trips in different currencies. Resolved for the MVP by ADR-0006: only EUR trips can be persisted, so all contributions are EUR; this signature must gain an explicit currency before any other currency is introduced.
 
 ## Alternatives Considered
 

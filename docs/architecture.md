@@ -11,21 +11,21 @@
 
 ## Implementation Snapshot (verified 2026-11-25)
 
-Verified by reading the repository and running `bun run typecheck` (4/4 workspaces pass) and `bun test` (65 passing tests).
+Verified by reading the repository and running `bun run typecheck` (4/4 workspaces pass) and `bun test` (68 passing tests).
 
-| Area                                                               | State                        | Evidence                                                                                                                                     |
-| ------------------------------------------------------------------ | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Root tooling                                                       | Implemented                  | Bun workspaces; scripts `lint`, `lint:fix`, `format`, `test`, `typecheck` in `package.json`                                                  |
-| Money, parsing, allocation                                         | Implemented                  | `packages/shared/src/money.ts`, `allocate.ts` (ADR-0001, ADR-0002)                                                                           |
-| Receipt split and debt simplification                              | Implemented                  | `packages/shared/src/split.ts`, `debts.ts` (ADR-0003, ADR-0004)                                                                              |
-| Shared Valibot contracts                                           | Implemented                  | `packages/shared/src/schemas/` (ADR-0005)                                                                                                    |
-| Shared tests                                                       | Implemented                  | 5 `bun:test` files, 65 passing tests covering money, allocation, split, debts, and schemas                                                   |
-| API HTTP surface                                                   | Minimal                      | `apps/api/src/index.ts` exposes one `GET /` handler; no tRPC, routes, auth, or persistence calls                                             |
-| Cloudflare configuration                                           | Implemented (binding level)  | `apps/api/wrangler.jsonc`: D1 `DB` (`fairshare-db`), R2 `RECEIPTS` (`fairshare-receipts`), observability enabled; `AI` binding commented out |
-| Workers binding types                                              | Missing                      | No `worker-configuration.d.ts` and no `@cloudflare/workers-types`; `env.DB` and `env.RECEIPTS` remain untyped until `wrangler types` runs    |
-| Mobile app                                                         | Starter only                 | Expo Router starter screens under `apps/mobile/src/app/`; no product screens, API client, or `@fairshare/shared` imports                     |
-| Database package                                                   | Scaffold only                | `packages/db/src/index.ts` is `export {};`; dependencies installed, no schema, queries, migrations, or `drizzle.config.ts`                   |
-| tRPC, Drizzle schema/migrations, authentication, OCR, LLM adapters | Next phase / not implemented | No tRPC references in source or `bun.lock`; `packages/db` is empty; no auth modules                                                          |
+| Area                                                      | State                                  | Evidence                                                                                                                                     |
+| --------------------------------------------------------- | -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| Root tooling                                              | Implemented                            | Bun workspaces; scripts `lint`, `lint:fix`, `format`, `test`, `typecheck` in `package.json`                                                  |
+| Money, parsing, allocation                                | Implemented                            | `packages/shared/src/money.ts`, `allocate.ts` (ADR-0001, ADR-0002)                                                                           |
+| Receipt split and debt simplification                     | Implemented                            | `packages/shared/src/split.ts`, `debts.ts` (ADR-0003, ADR-0004)                                                                              |
+| Shared Valibot contracts                                  | Implemented                            | `packages/shared/src/schemas/` (ADR-0005)                                                                                                    |
+| Shared tests                                              | Implemented                            | 5 `bun:test` files, 68 passing tests covering money, allocation, split, debts, and schemas                                                   |
+| API HTTP surface                                          | Minimal                                | `apps/api/src/index.ts` exposes one `GET /` handler; no tRPC, routes, auth, or persistence calls                                             |
+| Cloudflare configuration                                  | Implemented (binding level)            | `apps/api/wrangler.jsonc`: D1 `DB` (`fairshare-db`), R2 `RECEIPTS` (`fairshare-receipts`), observability enabled; `AI` binding commented out |
+| Workers binding types                                     | Implemented                            | `apps/api/worker-configuration.d.ts` generated by `wrangler types`; `env.DB` and `env.RECEIPTS` are typed                                    |
+| Mobile app                                                | Starter only                           | Expo Router starter screens under `apps/mobile/src/app/`; no product screens, API client, or `@fairshare/shared` imports                     |
+| Database package                                          | Implemented (schema + first migration) | `packages/db/src/schema.ts` defines six tables; `drizzle.config.ts` and `drizzle/0000_init.sql` exist; applied to local D1                   |
+| tRPC, database queries, authentication, OCR, LLM adapters | Next phase / not implemented           | No tRPC references in source or `bun.lock`; no query helpers or auth modules                                                                 |
 
 ## 1. Product Overview
 
@@ -43,17 +43,17 @@ OCR, deterministic parsing, and vision-LLM extraction are assistive steps, not a
 
 ## 2. Technology Baseline
 
-| Area                              | Technology / responsibility                                                  | Status                                                              |
-| --------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| Monorepo tooling                  | Bun workspaces and root scripts                                              | Implemented                                                         |
-| Mobile client                     | Expo + React Native; Expo Router navigation in `apps/mobile`                 | Implemented (starter app only)                                      |
-| API runtime                       | Hono on Cloudflare Workers in `apps/api`                                     | Implemented (single `GET /` handler)                                |
-| API transport                     | tRPC                                                                         | Next phase — not a dependency yet                                   |
-| Relational persistence            | Cloudflare D1 binding `DB`; Drizzle ORM in `packages/db`                     | Binding implemented; schema, queries, and migrations are next phase |
-| Object storage                    | Cloudflare R2 binding `RECEIPTS`                                             | Binding implemented; no read/write code yet                         |
-| Shared contracts and domain logic | TypeScript + Valibot in `packages/shared`                                    | Implemented (money, allocation, split, debts, extraction contract)  |
-| Lint / formatting                 | Biome (`biome.json`), including Markdown and a custom React Native text rule | Implemented                                                         |
-| Tests                             | `bun:test` in `packages/shared`                                              | Implemented; no API / mobile / db runner yet                        |
+| Area                              | Technology / responsibility                                                  | Status                                                               |
+| --------------------------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------- |
+| Monorepo tooling                  | Bun workspaces and root scripts                                              | Implemented                                                          |
+| Mobile client                     | Expo + React Native; Expo Router navigation in `apps/mobile`                 | Implemented (starter app only)                                       |
+| API runtime                       | Hono on Cloudflare Workers in `apps/api`                                     | Implemented (single `GET /` handler)                                 |
+| API transport                     | tRPC                                                                         | Next phase — not a dependency yet                                    |
+| Relational persistence            | Cloudflare D1 binding `DB`; Drizzle ORM in `packages/db`                     | Binding, schema, and first migration implemented; queries next phase |
+| Object storage                    | Cloudflare R2 binding `RECEIPTS`                                             | Binding implemented; no read/write code yet                          |
+| Shared contracts and domain logic | TypeScript + Valibot in `packages/shared`                                    | Implemented (money, allocation, split, debts, extraction contract)   |
+| Lint / formatting                 | Biome (`biome.json`), including Markdown and a custom React Native text rule | Implemented                                                          |
+| Tests                             | `bun:test` in `packages/shared`                                              | Implemented; no API / mobile / db runner yet                         |
 
 Do not infer exact package versions, deployment commands, binding names, authentication providers, LLM providers, or test frameworks from this summary. Read the relevant configuration before making changes.
 
@@ -99,7 +99,7 @@ Verify actual workspace dependencies before changing package boundaries. A packa
 - Define deterministic behavior for uneven splits, tax / tip allocation, discounts, and leftover cents. If the current code does not establish a policy, record the open question before implementing a new behavior.
 - Check integer range, database representation, and API serialization when changing money-related code.
 
-**Status:** Implemented in `packages/shared` — `src/money.ts` and `src/allocate.ts`; see ADR-0001 and ADR-0002. Uneven splits use largest-remainder allocation with deterministic index tie-breaking; unclaimed amounts are tracked separately rather than redistributed (ADR-0003). Two known gaps are recorded in section 10: `Cents` does not encode currency, and the two-decimal assumption does not fit every ISO 4217 currency.
+**Status:** Implemented in `packages/shared` — `src/money.ts` and `src/allocate.ts`; see ADR-0001, ADR-0002 and ADR-0006. Amounts are two-decimal integer cents of the single supported currency, EUR. Currency is required explicitly by the trip and extraction schemas, and non-EUR values are rejected. Uneven splits use largest-remainder allocation with deterministic index tie-breaking; unclaimed amounts are tracked separately rather than redistributed (ADR-0003). `Cents` does not encode currency; multi-currency support is deferred by ADR-0006, and free-text non-EUR marker handling remains open in section 10.
 
 ### Receipt extraction
 
@@ -184,11 +184,12 @@ The algorithm, objective, and tie-breaking rules are recorded in ADR-0004. The s
 
 ## 7. Persistence and Storage
 
-- D1 is bound as `DB` in `apps/api/wrangler.jsonc`, database name `fairshare-db`. The `database_id` is currently the placeholder `00000000-0000-0000-0000-000000000000`; replace it with the id printed by `wrangler d1 create fairshare-db` before deploying remotely. Local development uses Wrangler's local D1 state.
-- Drizzle schema, queries, and migrations belong in `packages/db`. The package is a scaffold today: `drizzle-orm` and `drizzle-kit` are installed, but there is no schema, no `drizzle.config.ts`, and no migrations directory. Creating these is next-phase work.
+- D1 is bound as `DB` in `apps/api/wrangler.jsonc`, database name `fairshare-db`. The `database_id` is currently the placeholder `00000000-0000-0000-0000-000000000000`; replace it with the id printed by `wrangler d1 create fairshare-db` before deploying remotely. Local development uses Wrangler's local D1 state. `migrations_dir` points at `packages/db/drizzle` so Wrangler applies the Drizzle-generated migrations.
+- Drizzle schema, queries, and migrations belong in `packages/db`. `src/schema.ts` currently defines `trips`, `trip_members`, `receipts`, `receipt_items`, `item_claims`, and `settlements`; `drizzle/0000_init.sql` is the first migration and has been applied to local D1 only. Query helpers do not exist yet.
+- Amounts are stored as integer cents. The `trips.currency` column is constrained to `'EUR'` (ADR-0006), and receipt/item amount columns have non-negative checks. Identity is deliberately not modelled: `trip_members` rows are opaque participants until the identity model is decided.
 - R2 is bound as `RECEIPTS`, bucket `fairshare-receipts`. No upload, download, or deletion code exists yet.
 - Object key layout, content validation, retention, signed-URL behavior, and cleanup are not defined; decide and record them before implementing uploads.
-- Workers binding types have not been generated. Run `wrangler types` (the `cf-typegen` script) and commit the generated `worker-configuration.d.ts` before using `env.DB` or `env.RECEIPTS`.
+- `apps/api/worker-configuration.d.ts` is generated by `wrangler types` (`bun run cf-typegen`) and committed; regenerate it after changing bindings. Biome excludes this generated file and `packages/db/drizzle`.
 - Treat database migrations as operationally consequential. Review forward / backward compatibility and never run against production without explicit authorization.
 
 ## 8. Security Model and Trust Boundaries
@@ -210,14 +211,20 @@ The current root commands are:
 - `bun run lint` — Biome check, including Markdown formatting and a custom React Native text rule.
 - `bun run lint:fix` — Biome check with safe fixes; may modify files.
 - `bun run format` — Biome format; may modify files.
-- `bun run test` — `bun:test`; currently the `packages/shared` suite (5 files, 65 tests). There is no API, mobile, or db test runner yet.
+- `bun run test` — `bun:test`; currently the `packages/shared` suite (5 files, 68 tests). There is no API, mobile, or db test runner yet.
 - `bun run typecheck` — `tsc --noEmit` in every workspace.
 
 Workspace scripts: `apps/api` exposes `dev`, `deploy`, `cf-typegen`, and `typecheck`; `apps/mobile` exposes `start`, `android`, `ios`, `web`, `lint`, and `typecheck`; `packages/shared` exposes `test` and `typecheck`; `packages/db` exposes `typecheck`.
 
+Migration commands (run from the stated directory):
+
+- Generate a migration after changing the schema: `cd packages/db && bunx drizzle-kit generate` (or `--name <slug>`).
+- Apply migrations to local D1: `cd apps/api && bunx wrangler d1 migrations apply fairshare-db --local`.
+- Remote D1 migration and deployment require Wrangler authentication and a real `database_id`; neither has been performed.
+
 `packages/shared` is consumed as TypeScript source (`exports: "./src/index.ts"`) with no build step. A Bun runtime import works; bundling through Metro (mobile) and Wrangler (API) has not been verified yet and should be smoke-tested when the first import is added.
 
-Migration and deployment commands are not defined yet: `packages/db` has no Drizzle configuration, and `apps/api` relies on the Wrangler scripts above. Do not invent commands; inspect `package.json` first.
+`packages/db` has a Drizzle configuration and generated SQL migrations; `apps/api` relies on the Wrangler scripts above. Do not invent commands; inspect `package.json` first.
 
 For domain changes, prioritize tests of money arithmetic, split allocation, and debt simplification. For API changes, test validation, authorization, and persistence boundaries. For mobile changes, test user-visible behavior and relevant platform-specific functionality using the tooling already configured.
 
@@ -227,8 +234,8 @@ These remain unresolved. Items already recorded in an ADR are noted, but may sti
 
 ### Money and domain
 
-- **Currency support and minor units.** `Cents` assumes two decimal places, while `currencyCodeSchema` accepts any ISO 4217 code. Decide between a two-decimal allowlist and minor-unit-aware amounts (ADR-0001 records the gap).
-- **Currency explicitness.** `simplifyAcrossTrips` has no currency parameter, and the extraction and trip schemas default to `"EUR"` when currency is omitted. Decide whether the field must be explicit and how mixed-currency trips are refused.
+- **Multi-currency support.** Resolved for the MVP by ADR-0006: EUR is the only accepted currency, amounts are two-decimal EUR cents, and currency is required explicitly in both trip and extraction contracts. Revisit with a new ADR if another currency is needed (minor-unit exponents, storage, formatting, and cross-currency aggregation policy).
+- **Non-EUR markers in free-text amounts.** `parseAmountToCents` strips currency markers such as `$` and `kr` without reporting them, so a non-EUR source could yield a plausible euro amount if its currency field is ignored. Decide how deterministic parsing should detect and reject unsupported currency markers.
 - **Settlement lifecycle.** Recording that a transfer actually happened, and how it interacts with recalculated balances.
 - **Debt-simplification objective.** ADR-0004 accepts a deterministic greedy result that is not guaranteed minimal. Revisit only if transfer count proves to matter in practice.
 
@@ -242,8 +249,8 @@ These remain unresolved. Items already recorded in an ADR are noted, but may sti
 
 ### Platform
 
-- Authentication provider, token/session model, and the authorization strategy for trips, receipts, items, and claims — including how join codes are rate-limited and whether they are secrets or capability tokens.
-- Database schema, transaction / concurrency strategy, and migration workflow.
+- Authentication provider, token/session model, and the authorization strategy for trips, receipts, items, and claims — including how join codes are rate-limited and whether they are secrets or capability tokens. The database schema deliberately leaves `trip_members` as opaque participant rows until this is decided.
+- Database transaction / concurrency strategy for simultaneous claims, and the remote migration / rollback workflow. The initial schema and local migration workflow now exist.
 - Receipt image upload protocol, R2 key structure, access controls, retention, and deletion lifecycle.
 - API error conventions and the public tRPC contract.
 - Test runner for `apps/api` (for example `@cloudflare/vitest-pool-workers`) and how the root `test` script should dispatch once more than one runner exists.

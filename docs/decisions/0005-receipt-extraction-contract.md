@@ -21,7 +21,7 @@ Implemented in `packages/shared/src/schemas/receipt.ts`.
 
 - OCR, parser, and LLM outputs converge on the same validation and therefore the same failure modes.
 - The contract is **complete-only**: at least one item and a total are required, so a partial OCR candidate cannot be represented. It also has no provenance or confidence fields (source region, extraction method, provider/model version). Both are required by the architecture and are future work.
-- `currency` currently defaults to `"EUR"` when omitted. This is a known deviation from the "never guess currency" rule; it must either be removed (require the field) or recorded as an explicit product decision.
+- `currency` is now **required** and accepts only `"EUR"` (ADR-0006). A missing or non-EUR currency is a validation failure; extraction never guesses currency.
 - Validation is pure and deterministic, so it can run on client and server; the server remains the authority.
 
 ## Alternatives Considered

@@ -34,7 +34,8 @@ export const receiptExtractionSchema = v.object({
 	purchasedAt: v.optional(
 		v.nullable(v.pipe(v.string(), v.regex(ISO_DATE_OR_TIMESTAMP))),
 	),
-	currency: v.optional(currencyCodeSchema, "EUR"),
+	/** Required: extracted currency is never guessed (ADR-0006). */
+	currency: currencyCodeSchema,
 	items: v.pipe(
 		v.array(extractedItemSchema),
 		v.minLength(1, "A receipt needs at least one item"),

@@ -9,6 +9,14 @@ export const MAX_AMOUNT_CENTS: Cents = 999_999_999 as Cents;
 
 export const ZERO_CENTS: Cents = 0 as Cents;
 
+/**
+ * The only currency the application supports while amounts are two-decimal
+ * minor units. Multi-currency is an explicit non-goal for the MVP (ADR-0006).
+ */
+export const SUPPORTED_CURRENCY_CODE = "EUR" as const;
+
+export type SupportedCurrencyCode = typeof SUPPORTED_CURRENCY_CODE;
+
 export type Cents = number & { readonly __brand: "Cents" };
 
 /**
@@ -59,6 +67,10 @@ export function toCents(value: number): Cents {
  *
  * A single separator followed by three digits is treated as a thousands
  * separator (`1.234` -> 123400), which matches European receipt output.
+ *
+ * This is a magnitude parser: currency markers are stripped and no currency is
+ * inferred. Callers must establish the currency from an explicit field and
+ * reject sources whose currency is unknown or unsupported (ADR-0006).
  *
  * @throws RangeError when the text is not a recognisable amount.
  */
@@ -153,21 +165,25 @@ export function parseAmountToCents(input: string): Cents {
 export interface FormatCentsOptions {
 	/** BCP 47 locale, defaults to `en-US`. */
 	readonly locale?: string;
-	/** ISO 4217 currency code, defaults to `EUR`. */
-	readonly currency?: string;
+	/** ISO 4217 currency code. EUR is the only supported currency (ADR-0006). */
+	readonly currency?: SupportedCurrencyCode;
 	/** Set to false to render `12.34` without a currency symbol. */
 	readonly showCurrency?: boolean;
 }
 
 /**
  * Formats cents for display. This is the only place where a floating point
- * EUR/USD value exists, and it never leaves the render layer.
+ * decimal currency value exists, and it never leaves the render layer.
  */
 export function formatCents(
 	cents: Cents,
 	options: FormatCentsOptions = {},
 ): string {
-	const { locale = "en-US", currency = "EUR", showCurrency = true } = options;
+	const {
+		locale = "en-US",
+		currency = SUPPORTED_CURRENCY_CODE,
+		showCurrency = true,
+	} = options;
 	const amount = cents / 100;
 
 	if (showCurrency) {

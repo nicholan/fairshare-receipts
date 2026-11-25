@@ -11,6 +11,7 @@ An Architecture Decision Record (ADR) captures a decision that should remain und
 | [ADR-0003](0003-receipt-split-semantics.md)      | Even item claims, proportional extras, explicit unclaimed bucket                      | Accepted                           |
 | [ADR-0004](0004-debt-simplification.md)          | Greedy max-creditor/max-debtor debt simplification, not minimal-transfer optimisation | Accepted                           |
 | [ADR-0005](0005-receipt-extraction-contract.md)  | One provider-neutral extraction contract with an arithmetic review gate               | Accepted (contract); pipeline open |
+| [ADR-0006](0006-eur-only-currency.md)            | EUR-only currency policy with required, explicit currency                             | Accepted                           |
 
 ## Conventions
 

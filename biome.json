@@ -7,7 +7,12 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"includes": ["**", "!**/*.svg"]
+		"includes": [
+			"**",
+			"!**/*.svg",
+			"!apps/api/worker-configuration.d.ts",
+			"!packages/db/drizzle"
+		]
 	},
 	"formatter": {
 		"enabled": true,

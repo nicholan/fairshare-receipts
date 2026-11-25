@@ -1,6 +1,10 @@
 import * as v from "valibot";
 
-import { type Cents, MAX_AMOUNT_CENTS } from "../money";
+import {
+	type Cents,
+	MAX_AMOUNT_CENTS,
+	SUPPORTED_CURRENCY_CODE,
+} from "../money";
 
 /** Integer cents, bounded to a realistic receipt amount. Output is branded. */
 export const centsSchema = v.pipe(
@@ -11,9 +15,14 @@ export const centsSchema = v.pipe(
 	v.transform((value) => value as Cents),
 );
 
-export const currencyCodeSchema = v.pipe(
-	v.string(),
-	v.regex(/^[A-Z]{3}$/, "Currency must be a 3-letter ISO 4217 code"),
+/**
+ * ISO 4217 currency code. EUR is the only supported currency until
+ * multi-currency and minor-unit handling are designed (ADR-0006). Currency is
+ * always explicit: there is no implicit default to guess from.
+ */
+export const currencyCodeSchema = v.literal(
+	SUPPORTED_CURRENCY_CODE,
+	"Only EUR is supported; multi-currency is not implemented yet",
 );
 
 export const idSchema = v.pipe(

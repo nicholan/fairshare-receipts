@@ -18,7 +18,8 @@
 			"binding": "DB",
 			"database_name": "fairshare-db",
 			// Replace with the id printed by `bunx wrangler d1 create fairshare-db`.
-			"database_id": "00000000-0000-0000-0000-000000000000"
+			"database_id": "00000000-0000-0000-0000-000000000000",
+			"migrations_dir": "../../packages/db/drizzle"
 		}
 	],
 	"observability": {

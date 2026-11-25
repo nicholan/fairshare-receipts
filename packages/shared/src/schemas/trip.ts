@@ -19,7 +19,8 @@ const tripNameSchema = v.pipe(
 
 export const tripCreateInputSchema = v.object({
 	name: tripNameSchema,
-	currency: v.optional(currencyCodeSchema, "EUR"),
+	/** Required: the client must state the currency (ADR-0006). */
+	currency: currencyCodeSchema,
 	hostName: displayNameSchema,
 	/** Extra participants invited up front; the host is added automatically. */
 	participantNames: v.optional(

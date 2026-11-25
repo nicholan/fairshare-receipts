@@ -5,6 +5,7 @@ import { toCents } from "../money";
 import { plain } from "../test-helpers";
 import {
 	createJoinCode,
+	currencyCodeSchema,
 	displayNameSchema,
 	joinCodeSchema,
 	receiptExtractionSchema,
@@ -38,6 +39,7 @@ const validExtraction = {
 describe("receiptExtractionSchema", () => {
 	test("applies defaults for optional totals", () => {
 		const parsed = v.parse(receiptExtractionSchema, {
+			currency: "EUR",
 			items: [
 				{
 					description: "Pasta",
@@ -54,6 +56,21 @@ describe("receiptExtractionSchema", () => {
 		expect(plain(parsed.tipCents)).toBe(0);
 		expect(plain(parsed.serviceChargeCents)).toBe(0);
 		expect(plain(parsed.discountCents)).toBe(0);
+	});
+
+	test("requires an explicit EUR currency", () => {
+		expect(() =>
+			v.parse(receiptExtractionSchema, {
+				items: validExtraction.items,
+				totalCents: validExtraction.totalCents,
+			}),
+		).toThrow();
+		expect(() =>
+			v.parse(receiptExtractionSchema, {
+				...validExtraction,
+				currency: "USD",
+			}),
+		).toThrow(/EUR/);
 	});
 
 	test("rejects fractional, negative or empty values", () => {
@@ -131,16 +148,42 @@ describe("join codes", () => {
 	});
 });
 
+describe("currencyCodeSchema", () => {
+	test("accepts EUR only", () => {
+		expect(v.safeParse(currencyCodeSchema, "EUR").success).toBe(true);
+		expect(v.safeParse(currencyCodeSchema, "USD").success).toBe(false);
+		expect(v.safeParse(currencyCodeSchema, "GBP").success).toBe(false);
+		expect(v.safeParse(currencyCodeSchema, "eur").success).toBe(false);
+	});
+});
+
 describe("tripCreateInputSchema", () => {
-	test("defaults currency and participants", () => {
+	test("requires an explicit EUR currency and defaults participants", () => {
 		const parsed = v.parse(tripCreateInputSchema, {
 			name: "Lisbon trip",
+			currency: "EUR",
 			hostName: "  Ana  ",
 		});
 
 		expect(parsed.currency).toBe("EUR");
 		expect(parsed.participantNames).toEqual([]);
 		expect(parsed.hostName).toBe("Ana");
+	});
+
+	test("rejects a missing or non-EUR currency", () => {
+		expect(() =>
+			v.parse(tripCreateInputSchema, {
+				name: "Lisbon trip",
+				hostName: "Ana",
+			}),
+		).toThrow();
+		expect(() =>
+			v.parse(tripCreateInputSchema, {
+				name: "Lisbon trip",
+				currency: "GBP",
+				hostName: "Ana",
+			}),
+		).toThrow(/EUR/);
 	});
 
 	test("trims display names", () => {

@@ -29,7 +29,7 @@ Trade-offs and follow-ups:
 
 - Branded numbers are awkward in test expectations; `src/test-helpers.ts` (`plain`) strips the brand for assertions only.
 - The brand exists only at compile time. Values crossing a trust boundary must be re-validated (`centsSchema`/`toCents`) and never assumed from JSON.
-- The type encodes magnitude but not currency. Currency identity is carried separately (trip and extraction `currency`); preventing cross-currency netting is the caller's responsibility and remains an open policy question.
+- The type encodes magnitude but not currency. Currency identity is carried separately (trip and extraction `currency`); preventing cross-currency netting is the caller's responsibility. Resolved for the MVP by ADR-0006: EUR is the only supported currency and is required explicitly.
 - The model assumes two decimal places. `currencyCodeSchema` accepts any ISO 4217 code, so currencies with 0 or 3 minor units (e.g. JPY, KWD) are not handled correctly yet.
 - Parsing heuristic: a single separator followed by three digits is treated as a thousands separator (`1.234` becomes 123400). This is a recorded policy, not a universal truth.
 
