@@ -15,7 +15,7 @@ Read [`docs/architecture.md`](docs/architecture.md) for the current architectura
 - `packages/shared` — Shared TypeScript types, Valibot schemas, and pure domain/math helpers, including split and debt-simplification logic.
 - `packages/db` — Drizzle ORM schema, database queries, and migrations (scaffold only at the time of writing; see `docs/architecture.md`).
 - `docs/` — Architecture documentation and Architecture Decision Records (ADRs).
-- `.agent/` — Temporary agent handoff state and its template.
+- `.agent/` — Session handoff state (`HANDOFF.md`, committed at the end of each session) and its template.
 
 ## Commands
 

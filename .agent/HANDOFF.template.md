@@ -1,6 +1,6 @@
 # Agent Session Handoff
 
-> Copy this template to `.agent/HANDOFF.md` when a new session needs a checkpoint. Replace all placeholders with verified facts. Keep this file concise and do not include secrets, tokens, personal receipt data, or raw terminal dumps.
+> Copy this template to `.agent/HANDOFF.md` when a new session needs a checkpoint. Replace all placeholders with verified facts. Keep this file concise and do not include secrets, tokens, personal receipt data, or raw terminal dumps. Commit the completed handoff at the end of the session (repository policy).
 
 ## Goal
 
