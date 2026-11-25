@@ -1,0 +1,7 @@
+# Local secrets for `wrangler dev`. Copy to .dev.vars (git-ignored).
+
+# Which extractor the API uses: workers-ai | openai
+EXTRACTION_PROVIDER=workers-ai
+
+# Only required when EXTRACTION_PROVIDER=openai
+# OPENAI_API_KEY=sk-...
